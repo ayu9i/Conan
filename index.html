@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conan Ultimate Hub | All-in-One Edition</title>
+    <title>Conan Hub | Pro Update 2026</title>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
             --conan-gold: #d4af37;
             --conan-black: #050505;
             --glass: rgba(255, 255, 255, 0.08);
+            --true-red: #ff0000;
         }
 
         body {
@@ -18,8 +19,24 @@
             color: white; display: flex; justify-content: center; min-height: 100vh; padding-bottom: 50px;
         }
 
+        /* Update Announcement Modal */
+        #updateModal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 1000; display: flex;
+            align-items: center; justify-content: center; backdrop-filter: blur(10px);
+        }
+        .modal-content {
+            background: #111; border: 2px solid var(--conan-gold); border-radius: 20px;
+            padding: 30px; max-width: 400px; width: 85%; text-align: center;
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+        }
+        .modal-content h3 { color: var(--conan-gold); margin-top: 0; }
+        .update-list { text-align: left; font-size: 0.85rem; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; margin: 15px 0; line-height: 1.6; }
+        .btn-close { background: var(--conan-gold); color: #000; border: none; padding: 10px 30px; border-radius: 50px; font-weight: 600; cursor: pointer; font-family: 'Kanit'; }
+
+        /* Main UI */
         .container { width: 100%; max-width: 500px; padding: 30px 15px; text-align: center; }
-        .premium-card { background: var(--glass); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 24px; padding: 25px 20px; backdrop-filter: blur(15px); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7); }
+        .premium-card { background: var(--glass); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 24px; padding: 25px 20px; backdrop-filter: blur(15px); }
 
         .result-container { margin: 15px 0; min-height: 160px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .info-badge { display: inline-block; padding: 4px 12px; background: rgba(212, 175, 55, 0.1); border: 1px solid var(--conan-gold); border-radius: 50px; font-size: 0.8rem; color: var(--conan-gold); margin-bottom: 8px; opacity: 0; transition: 0.3s; }
@@ -30,13 +47,11 @@
         .ep-display.show { opacity: 1; transform: translateY(0); }
 
         .btn-main { width: 100%; padding: 14px; font-size: 1rem; font-weight: 600; border-radius: 12px; border: none; cursor: pointer; transition: 0.3s; margin-bottom: 10px; font-family: 'Kanit'; }
-        .btn-gold { background: linear-gradient(135deg, #d4af37 0%, #f1d57a 100%); color: #000; box-shadow: 0 0 15px rgba(212, 175, 55, 0.2); }
-        .btn-red { background: linear-gradient(135deg, #ff0000 0%, #a00000 100%); color: #fff; }
+        .btn-gold { background: linear-gradient(135deg, #d4af37 0%, #f1d57a 100%); color: #000; }
         .btn-dark { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); }
 
-        .history-card { margin-top: 25px; text-align: left; background: rgba(0,0,0,0.4); border-radius: 20px; padding: 15px; border: 1px solid rgba(255,255,255,0.1); }
-        .history-title { font-size: 0.9rem; color: var(--conan-gold); margin-bottom: 10px; display: flex; justify-content: space-between; }
-        .history-list { max-height: 200px; overflow-y: auto; font-size: 0.85rem; }
+        .history-card { margin-top: 25px; text-align: left; background: rgba(0,0,0,0.4); border-radius: 20px; padding: 15px; }
+        .history-list { max-height: 150px; overflow-y: auto; font-size: 0.85rem; }
         .history-item { padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
         .history-item.checked { opacity: 0.5; text-decoration: line-through; }
 
@@ -45,83 +60,60 @@
         .door-left { left: -50%; } .door-right { right: -50%; }
         .door-container.active .door-left { transform: translateX(100%); }
         .door-container.active .door-right { transform: translateX(-100%); }
-
-        .label { font-size: 0.75rem; color: #888; text-transform: uppercase; margin: 15px 0 5px 5px; display: block; text-align: left; }
-        select { background: #111; color: #fff; border: 1px solid #444; padding: 10px; border-radius: 8px; width: 100%; font-family: 'Kanit'; }
     </style>
 </head>
 <body>
+
+<!-- Update Modal -->
+<div id="updateModal">
+    <div class="modal-content">
+        <h3>📢 ประกาศอัปเดตระบบ</h3>
+        <p>ปรับปรุงการนับเลขตอนตาม TrueVisions</p>
+        <div class="update-list">
+            • <b>ซีซั่น 1-19:</b> นับรันยาว (1-981) <br>
+            • <b>ซีซั่น 20-24:</b> นับใหม่ 1-52/53 <br>
+            • <b>ซีซั่น 25:</b> ปัจจุบัน 1-11 (รออัปเดต) <br>
+            • <b>Movie:</b> อัปเดตครบ 1-28 + ลูแปง
+        </div>
+        <button class="btn-close" onclick="closeModal()">รับทราบค่าาา!</button>
+    </div>
+</div>
 
 <div class="door-container" id="doorSystem">
     <div class="door door-left"></div><div class="door door-right"></div>
 </div>
 
 <div class="container">
-    <h2 style="letter-spacing: 2px; margin-bottom: 5px;">CONAN HUB <small style="font-size: 0.5em; vertical-align: middle;">ULTIMATE</small></h2>
+    <h2 style="letter-spacing: 2px;">CONAN HUB <small style="font-size: 0.5em;">V3.0</small></h2>
     
     <div class="premium-card">
-        <div id="badge" class="info-badge">สืบค้นคดี...</div>
+        <div id="badge" class="info-badge">วิเคราะห์ระบบ...</div>
         <div class="result-container">
-            <h2 id="epDisplay" class="ep-display">ความจริงมีเพียงหนึ่งเดียว!</h2>
+            <h2 id="epDisplay" class="ep-display">สุ่มคดีที่ต้องการได้เลย!</h2>
         </div>
 
-        <button class="btn-main btn-gold" onclick="spinEverything()">สุ่มทุกอย่างในโลกโคนัน</button>
+        <button class="btn-main btn-gold" onclick="spinEverything()">สุ่มทุกตอน (ซีรีส์/มูฟวี่/ลูแปง)</button>
         
-        <span class="label">เฉพาะทาง</span>
-        <button class="btn-main btn-red" onclick="spinMovie()">สุ่มเดอะมูฟวี่ (1-28)</button>
-        
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
-            <select id="charSelect">
-                <option value="kid">จอมโจรคิด 🎩</option>
-                <option value="ai">ไฮบาระ ไอ 🧪</option>
-                <option value="amuro">อามุโร่ ☕</option>
-                <option value="akai">อากาอิ 🔫</option>
-            </select>
-            <button class="btn-main btn-dark" style="margin-bottom:0;" onclick="spinChar()">สุ่มตามตัวละคร</button>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
+            <button class="btn-main btn-dark" onclick="spinMovie()">มูฟวี่ 1-28</button>
+            <button class="btn-main btn-dark" onclick="spinLupin()">ปะทะ ลูแปง</button>
         </div>
-
-        <button class="btn-main btn-dark" onclick="spinLupin()">สุ่มโคนัน ปะทะ ลูแปง</button>
 
         <div class="history-card">
-            <div class="history-title">ประวัติการสุ่มล่าสุด <span onclick="clearHistory()" style="cursor:pointer; color: #888;">[ล้าง]</span></div>
-            <div id="historyList" class="history-list">
-                <div style="color:#666; text-align:center; padding:10px;">ยังไม่มีประวัติการสุ่ม</div>
-            </div>
+            <div id="historyList" class="history-list"></div>
         </div>
     </div>
 </div>
 
 <script>
-    const movieNames = [
-        "คดีปริศนาระเบิดระฟ้า", "คดีฆาตกรรมไพ่ปริศนา", "พ่อมดคนสุดท้ายแห่งศตวรรษ", "คดีฆาตกรรมนัยน์ตาปริศนา", "คดีปริศนาเส้นตายสู่สวรรค์",
-        "ปริศนาบนถนนสายมรณะ", "คดีฆาตกรรมแห่งเมืองปริศนา", "มนตราแห่งรัตติกาลสีเงิน", "ยุทธการเหนือห้วงทะเลลึก", "บทเพลงมรณะแด่เหล่ายอดนักสืบ",
-        "ปริศนามหาขุมทรัพย์โจรสลัด", "บทเพลงแห่งความตาย", "ปริศนานักล่าทรชนทมิฬ", "ปริศนามรณะเหนือน่านฟ้า", "15 นาทีเฉียดตาย",
-        "ระทึกขวัญเรือรบมรณะ", "ปริศนาทานตะวันมรณะ", "ปริศนารัตติกาลทมิฬ", "ปริศนาเพลงกลอนซ่อนรัก", "ปฏิบัติการสายลับเดอะซีโร่",
-        "ศึกชิงอัญมณีสีคราม", "กระสุนสีเพลิง", "เจ้าสาวฮาโลวีน", "มฤตยูใต้น้ำทมิฬ", "ดาวห้าแฉกแห่งร้อยล้าน", "ศึกชิงเพชรกลางท้องฟ้า",
-        "คดีฆาตกรรมปริศนาโรงละคร", "คดีปริศนากุหลาบดำ"
-    ];
+    const movieNames = ["คดีปริศนาระเบิดระฟ้า", "คดีฆาตกรรมไพ่ปริศนา", "พ่อมดคนสุดท้ายแห่งศตวรรษ", "คดีฆาตกรรมนัยน์ตาปริศนา", "คดีปริศนาเส้นตายสู่สวรรค์", "ปริศนาบนถนนสายมรณะ", "คดีฆาตกรรมแห่งเมืองปริศนา", "มนตราแห่งรัตติกาลสีเงิน", "ยุทธการเหนือห้วงทะเลลึก", "บทเพลงมรณะแด่เหล่ายอดนักสืบ", "ปริศนามหาขุมทรัพย์โจรสลัด", "บทเพลงแห่งความตาย", "ปริศนานักล่าทรชนทมิฬ", "ปริศนามรณะเหนือน่านฟ้า", "15 นาทีเฉียดตาย", "ระทึกขวัญเรือรบมรณะ", "ปริศนาทานตะวันมรณะ", "ปริศนารัตติกาลทมิฬ", "ปริศนาเพลงกลอนซ่อนรัก", "ปฏิบัติการสายลับเดอะซีโร่", "ศึกชิงอัญมณีสีคราม", "กระสุนสีเพลิง", "เจ้าสาวฮาโลวีน", "มฤตยูใต้น้ำทมิฬ", "ดาวห้าแฉกแห่งร้อยล้าน", "ศึกชิงเพชรกลางท้องฟ้า", "คดีฆาตกรรมปริศนาโรงละคร", "คดีปริศนากุหลาบดำ"];
 
-    const charData = {
-        kid: [78, 79, 139, 140, 235, 236, 381, 382, 430, 431, 512, 513, 562, 563, 678, 775],
-        ai: [136, 137, 138, 148, 149, 190, 191, 192, 249, 250, 298, 299, 753],
-        amuro: [719, 720, 721, 751, 752, 755, 756, 832, 836, 851, 936],
-        akai: [249, 250, 277, 278, 309, 311, 333, 538, 540, 551, 832]
+    // ข้อมูลเลขตอนตามสั่ง
+    const tvSeasons = {
+        20: 52, 21: 52, 22: 52, 23: 53, 24: 52, 25: 11
     };
 
-    const lupinEps = ["Lupin III vs. Detective Conan (2009) TV Special", "Lupin III vs. Detective Conan (2013) The Movie"];
-
-    const seasonRanges = [];
-    let currentStart = 1;
-    for (let i = 1; i <= 24; i++) {
-        let count = (i <= 18) ? 44 : 52;
-        let end = currentStart + count - 1;
-        seasonRanges.push({ s: i, start: currentStart, end: end });
-        currentStart = end + 1;
-    }
-    const s25Max = 11;
-
-    let history = JSON.parse(localStorage.getItem('conanHistoryFull')) || [];
-    renderHistory();
+    function closeModal() { document.getElementById('updateModal').style.display = 'none'; }
 
     function startSpin(randomFn) {
         const doors = document.getElementById('doorSystem');
@@ -140,95 +132,69 @@
 
     function spinEverything() {
         startSpin(() => {
-            const chance = Math.random();
-            if (chance < 0.6) spinAllLogic();
-            else if (chance < 0.9) spinMovieLogic();
-            else spinLupinLogic();
+            const pool = Math.random();
+            if (pool < 0.7) {
+                // สุ่มซีรีส์
+                const sType = Math.random();
+                if (sType < 0.5) { 
+                    // 1-19 (iQIYI Style)
+                    const rand = Math.floor(Math.random() * 981) + 1;
+                    updateUI(`ตอนที่ ${rand}`, "ซีซั่น 1-19 (รันยาว)");
+                    addToHistory(`ตอนที่ ${rand}`);
+                } else {
+                    // 20-25 (TrueVisions Style)
+                    const sKeys = Object.keys(tvSeasons);
+                    const s = sKeys[Math.floor(Math.random() * sKeys.length)];
+                    const ep = Math.floor(Math.random() * tvSeasons[s]) + 1;
+                    updateUI(`ซีซั่น ${s} ตอนที่ ${ep}`, `TrueVisions`);
+                    addToHistory(`ซีซั่น ${s} ตอนที่ ${ep}`);
+                }
+            } else if (pool < 0.95) {
+                spinMovieLogic();
+            } else {
+                spinLupinLogic();
+            }
         });
-    }
-
-    function spinAllLogic() {
-        const iqiyiMax = seasonRanges[23].end;
-        const rand = Math.floor(Math.random() * (iqiyiMax + s25Max)) + 1;
-        let result = "";
-        if (rand <= iqiyiMax) {
-            const f = seasonRanges.find(r => rand >= r.start && rand <= r.end);
-            result = `ซีซั่น ${f.s} ตอนที่ ${rand}`;
-        } else {
-            result = `ซีซั่น 25 ตอนที่ ${rand - iqiyiMax}`;
-        }
-        updateUI(result, "เดอะซีรีส์");
-        addToHistory(result);
     }
 
     function spinMovieLogic() {
         const idx = Math.floor(Math.random() * movieNames.length);
-        const result = `Movie ${idx + 1} <span>${movieNames[idx]}</span>`;
-        updateUI(result, "เดอะมูฟวี่");
-        addToHistory(`Movie ${idx + 1}: ${movieNames[idx]}`);
+        const res = `Movie ${idx + 1} <span>${movieNames[idx]}</span>`;
+        updateUI(res, "เดอะมูฟวี่");
+        addToHistory(`Movie ${idx+1}: ${movieNames[idx]}`);
     }
 
     function spinLupinLogic() {
-        const res = lupinEps[Math.floor(Math.random() * lupinEps.length)];
+        const res = Math.random() > 0.5 ? "Lupin III vs Conan (2009)" : "Lupin III vs Conan (2013)";
         updateUI(res, "ตอนพิเศษ ลูแปง");
         addToHistory(res);
-    }
-
-    function spinChar() {
-        startSpin(() => {
-            const char = document.getElementById('charSelect').value;
-            const pool = charData[char];
-            const randEp = pool[Math.floor(Math.random() * pool.length)];
-            const f = seasonRanges.find(r => randEp >= r.start && randEp <= r.end);
-            const result = `ซีซั่น ${f.s} ตอนที่ ${randEp}`;
-            updateUI(result, `เจอตัวละครที่เลือก`);
-            addToHistory(result);
-        });
     }
 
     function spinMovie() { startSpin(spinMovieLogic); }
     function spinLupin() { startSpin(spinLupinLogic); }
 
-    function updateUI(main, badgeText) {
+    function updateUI(main, bText) {
         document.getElementById('epDisplay').innerHTML = main;
-        document.getElementById('badge').innerHTML = badgeText;
+        document.getElementById('badge').innerHTML = bText;
     }
 
-    function addToHistory(text) {
-        const cleanText = text.replace(/<[^>]*>?/gm, '');
-        history.unshift({ id: Date.now(), text: cleanText, checked: false });
-        if (history.length > 20) history.pop();
-        saveAndRender();
-    }
-
-    function toggleCheck(id) {
-        const item = history.find(h => h.id === id);
-        if (item) item.checked = !item.checked;
-        saveAndRender();
-    }
-
-    function clearHistory() {
-        if(confirm("ล้างประวัติทั้งหมด?")) { history = []; saveAndRender(); }
-    }
-
-    function saveAndRender() {
-        localStorage.setItem('conanHistoryFull', JSON.stringify(history));
-        renderHistory();
-    }
-
+    let history = JSON.parse(localStorage.getItem('conanHistoryV3')) || [];
     function renderHistory() {
         const list = document.getElementById('historyList');
-        if (history.length === 0) {
-            list.innerHTML = '<div style="color:#666; text-align:center; padding:10px;">ยังไม่มีประวัติการสุ่ม</div>';
-            return;
-        }
-        list.innerHTML = history.map(h => `
-            <div class="history-item ${h.checked ? 'checked' : ''}" onclick="toggleCheck(${h.id})">
-                <span>${h.text}</span>
-                <span>${h.checked ? '✅ ดูแล้ว' : '⭕'}</span>
-            </div>
-        `).join('');
+        list.innerHTML = history.length === 0 ? '<div style="color:#666; text-align:center;">ยังไม่มีประวัติ</div>' :
+            history.map(h => `<div class="history-item ${h.checked ? 'checked' : ''}" onclick="toggleCheck(${h.id})"><span>${h.text}</span><span>${h.checked ? '✅' : '⭕'}</span></div>`).join('');
     }
+    function addToHistory(text) {
+        history.unshift({ id: Date.now(), text: text.replace(/<[^>]*>?/gm, ''), checked: false });
+        if (history.length > 15) history.pop();
+        localStorage.setItem('conanHistoryV3', JSON.stringify(history));
+        renderHistory();
+    }
+    function toggleCheck(id) {
+        const i = history.find(h => h.id === id); if (i) i.checked = !i.checked;
+        localStorage.setItem('conanHistoryV3', JSON.stringify(history)); renderHistory();
+    }
+    renderHistory();
 </script>
 </body>
 </html>
