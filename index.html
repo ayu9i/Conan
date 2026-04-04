@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Conan Hub | Anti-Repeat V3.5 Fixed & Expanded</title>
+    <title>Conan Hub | Anti-Repeat V3.6 Fixed All</title>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root { 
@@ -125,11 +125,11 @@
 
 <div id="updateModal">
     <div class="modal-content">
-        <h3>📢 อัปเดตล่าสุด V3.5 (Fixed)</h3>
+        <h3>📢 อัปเดตล่าสุด V3.6 (Fixed)</h3>
         <div class="update-list">
-            • <b>Strict Anti-Repeat:</b> ระบบสุ่มแบบใหม่ เช็คละเอียด ห้ามตอนซ้ำโผล่!<br>
-            • <b>Advanced Chatbot:</b> เพิ่มคำถามตอบโต้ 20+ รูปแบบ!<br>
-            • <b>Inventory Toggle:</b> สามารถย่อ/ขยายคลังรายชื่อคดีได้แล้ว
+            • <b>Fixed Duplicate Bug:</b> แก้ไขบัคที่สุ่มได้ตอนเดิมซ้ำในประวัติแล้ว<br>
+            • <b>Inventory Toggle:</b> สลับปิด/เปิดคลังคดีได้เพื่อลดความรก<br>
+            • <b>Expanded Chatbot:</b> เพิ่มคลังคำตอบเรื่องคดีโคนัน 20 รูปแบบ!
         </div>
         <button class="btn-main btn-gold" onclick="closeModal()">เข้าสู่หน้าหลัก!</button>
     </div>
@@ -186,9 +186,9 @@
 
 <div id="chatBtn" onclick="toggleChat()">🔍</div>
 <div id="chatWindow">
-    <div class="chat-header">ผู้ช่วยนักสืบ (V3.5)</div>
+    <div class="chat-header">ผู้ช่วยนักสืบ (V3.6)</div>
     <div class="chat-body" id="chatBody">
-        <div class="msg bot">สวัสดีค่ะ Ayu! มีคดีไหนให้ช่วยสืบบอกน้องได้เลยนะคะ! มีข้อมูลใหม่ๆ มาเพียบเลย!</div>
+        <div class="msg bot">สวัสดีค่ะ Ayu! แก้บัคตอนซ้ำให้แล้วนะ! มีเรื่องไหนอยากรู้อีกไหม?</div>
     </div>
     <div class="rich-menu-container">
         <div class="menu-tabs">
@@ -216,6 +216,8 @@
             <div class="menu-item" onclick="botReply('ฮัตโตริสารภาพรักยัง')">ฮัตโตริสมหวังยัง?</div>
             <div class="menu-item" onclick="botReply('รัมคือใคร')">เผยตัวจริง RUM</div>
             <div class="menu-item" onclick="botReply('ยาแก้พิษชั่วคราว')">ยา APTX4869</div>
+            <div class="menu-item" onclick="botReply('ฟุรุยะเรย์อายุ')">อามุโร่อายุเท่าไหร่?</div>
+            <div class="menu-item" onclick="botReply('โคนันจบเมื่อไหร่')">เมื่อไหร่จะจบ?</div>
         </div>
     </div>
 </div>
@@ -247,8 +249,12 @@
 
     // --- [Logic Sections] ---
     function isDuplicate(text) {
-        const cleanText = text.replace(/<[^>]*>?/gm, '').trim();
-        return history.some(item => item.text.replace(/<[^>]*>?/gm, '').trim() === cleanText);
+        // ล้าง Tag HTML ออกก่อนเช็คเสมอเพื่อความแม่นยำ
+        const cleanTarget = text.replace(/<[^>]*>?/gm, '').trim();
+        return history.some(item => {
+            const cleanHistoryItem = item.text.replace(/<[^>]*>?/gm, '').trim();
+            return cleanHistoryItem === cleanTarget;
+        });
     }
 
     function toggleInventory() {
@@ -283,20 +289,22 @@
             'มูฟวี่ล่าสุด': "ภาค 28 'ปริศนาภาพติดตามรณะ' ไงล่ะ! มีทั้งฮัตโตริและจอมโจรคิดเลยนะ!",
             'ใครคือบอส': "ความลับระดับองค์กรเลยนะเนี่ย! แต่ชื่อ 'คาราสุมะ เร็นยะ' พอจะคุ้นหูบ้างไหมคะ?",
             'ชินอิจิรัน': "คู่นี้เค้าตกลงคบกันแล้วนะ Ayu หวานจนมดขึ้นจอที่วัดคิโยมิซึเลยล่ะ!",
-            'รันรู้ความจริงยัง': "รันเคยสงสัยหลายครั้งมาก! แต่โดนชินอิจิ (และคนรอบข้าง) แถจนเชื่อทุกที แต่ในมูฟวี่บางภาคนางแอบเซนส์แรงนะ!",
+            'รันรู้ความจริงยัง': "รันเคยสงสัยหลายครั้งมาก! แต่โดนชินอิจิแถจนเชื่อทุกที แต่เซนส์ของรันน่ะน่ากลัวที่สุดแล้วนะ!",
             'เซระคือใคร': "น้องสาวของอากาอิ ชูอิจิค่ะ! เป็นนักสืบสาวที่มีทักษะจีทคุนโด้เก่งมากๆ",
-            'เบลม็อทใจดีไหม': "นางเป็น 'A Secret Makes A Woman Woman' ค่ะ แม้จะเป็นคนในองค์กรแต่ก็คอยปกป้องโคนันกับรันเสมอในฐานะ Angel",
-            'อากาอิขิตไหม': "ยังไม่ตาย! เป็นแผนซ้อนแผนที่โรงพยาบาลไรริน ตอนนี้ปลอมตัวเป็น 'โอกิยะ สึบารุ' อาศัยบ้านชินอิจิอยู่จ้า",
-            'ไฮบาระชอบโคนัน?': "มีใจให้แน่นอนค่ะ! แต่ออกแนวแอบรักและซัพพอร์ตอยู่ห่างๆ เพราะรู้ว่าชินอิจิมีรันอยู่แล้ว เศร้าเนอะ Ayu",
-            'ความหมายของคำว่าชินอิจิ': "Shin (真) แปลว่าความจริง, Ichi (一) แปลว่าหนึ่ง รวมกันคือ 'ความจริงมีเพียงหนึ่งเดียว' ไงคะ!",
-            'ดร.อากาสะคือบอส?': "นี่คือทฤษฎีสมคบคิดยุคแรกเลย! แต่อาจารย์โกโชยืนยันแล้วว่า 'ไม่ใช่' แน่นอน สบายใจได้!",
-            'ทำไมโคนันไม่โต': "ในเรื่องผ่านไปแค่ไม่กี่เดือนเองนะ (แม้เราจะดูมา 20 ปีแล้วก็ตาม) เวลาในโลกโคนันมันเดินช้ามากกกก",
-            'เบอร์เบินคือใคร': "คือ 'อามุโร่ โทโอรุ' หรือชื่อจริง 'ฟุรุยะ เรย์' เป็นตำรวจลับญี่ปุ่น (Public Security) ที่แฝงตัวเข้าไปค่ะ",
-            'ฮัตโตริสารภาพรักยัง': "พยายามมาหลายรอบมาก! ล่าสุดในมูฟวี่ 27 เกือบจะสำเร็จแล้วนะ ต้องไปลุ้นต่อในภาคล่าสุด!",
-            'รัมคือใคร': "อันดับ 2 ขององค์กรชุดดำ คือ 'วากิตะ คาเนะโนริ' พ่อครัวร้านซูชิข้างสำนักงานนักสืบนั่นเอง!",
-            'ยาแก้พิษชั่วคราว': "ไอจังทำยาแก้พิษชั่วคราวได้ แต่ต้องระวังนะ เพราะถ้ากินบ่อยร่างกายจะสร้างภูมิคุ้มกันทำให้ฤทธิ์ยาอยู่น้อยลง"
+            'เบลม็อทใจดีไหม': "นางเป็นคนลึกลับค่ะ แม้จะเป็นคนในองค์กรแต่ก็คอยปกป้องโคนันกับรันเสมอในฐานะ Angel",
+            'อากาอิขิตไหม': "ยังไม่ตาย! ตอนนี้ปลอมตัวเป็น 'โอกิยะ สึบารุ' อาศัยบ้านชินอิจิอยู่จ้า",
+            'ไฮบาระชอบโคนัน?': "มีใจให้แน่นอนค่ะ! แต่ออกแนวซัพพอร์ตอยู่ห่างๆ เศร้าเนอะ Ayu",
+            'ความหมายของคำว่าชินอิจิ': "Shin (真) แปลว่าความจริง, Ichi (一) แปลว่าหนึ่ง รวมกันคือ 'ความจริงมีเพียงหนึ่งเดียว'!",
+            'ดร.อากาสะคือบอส?': "อาจารย์โกโชยืนยันแล้วว่า 'ไม่ใช่' แน่นอน สบายใจได้!",
+            'ทำไมโคนันไม่โต': "ในเรื่องผ่านไปแค่ไม่กี่เดือนเองนะ (แม้คนดูจะแก่แล้วก็ตาม 555)",
+            'เบอร์เบินคือใคร': "คือ 'อามุโร่ โทโอรุ' หรือ 'ฟุรุยะ เรย์' ตำรวจลับญี่ปุ่นนั่นเอง!",
+            'ฮัตโตริสารภาพรักยัง': "พยายามมาหลายรอบมาก! ล่าสุดในมูฟวี่ 27 เกือบจะสำเร็จแล้ว ลุ้นกันต่อไป!",
+            'รัมคือใคร': "อันดับ 2 ขององค์กรคือ 'วากิตะ คาเนะโนริ' พ่อครัวร้านซูชิข้างสำนักงานนักสืบจ้า!",
+            'ยาแก้พิษชั่วคราว': "ไอจังทำยาแก้พิษชั่วคราวได้ แต่ฤทธิ์จะสั้นลงเรื่อยๆ ถ้ากินบ่อยเกินไปนะ",
+            'ฟุรุยะเรย์อายุ': "อามุโร่ อายุ 29 ปีค่ะ เป็นชายที่ทำงาน 3 หน้าที่ได้แบบเทพสุดๆ",
+            'โคนันจบเมื่อไหร่': "ยังไม่มีกำหนดจบค่ะ แต่อาจารย์โกโชบอกว่าร่างโครงตอนจบไว้เรียบร้อยแล้ว!"
         };
-        reply = responses[cmd] || "อืม... คดีนี้ดูยากจัง ลองถามเรื่องอื่นดูไหมคะ หรือลองกดดูคำถามที่แท็บ 'คำถามยอดฮิต' นะ!";
+        reply = responses[cmd] || "อืม... คดีนี้ดูยากจัง ลองถามเรื่องอื่นดูไหมคะ หรือลองกดดูที่ 'คำถามยอดฮิต' นะ!";
         setTimeout(() => { body.innerHTML += `<div class="msg bot">${reply}</div>`; body.scrollTop = body.scrollHeight; }, 400);
     }
 
@@ -364,22 +372,40 @@
             const c = document.getElementById('charSelect').value;
             const pool = charData[c];
             let rawRes, retry = 0;
+            
+            // วนลูปหาตอนที่ไม่ซ้ำ
             do {
                 rawRes = pool[Math.floor(Math.random() * pool.length)];
                 retry++;
-            } while (isDuplicate(rawRes) && retry < 30);
+            } while (isDuplicate(rawRes) && retry < 50);
+
+            if (retry >= 50) {
+                alert("สุ่มจนครบโควตาตัวละครนี้แล้วนะ Ayu!");
+                return;
+            }
+
             const charNames = { black_org: "องค์กรชุดดำ", kid: "จอมโจรคิด", ai: "ไฮบาระ", amuro: "อามุโร่", akai: "อากาอิ", detective_boys: "แก๊งนักสืบเยาวชน", shinichi: "ชินอิจิ", makoto: "มาโคโตะ" };
+            
             let displayRes = rawRes;
             if(rawRes.includes('(')) {
                 const parts = rawRes.split(' (');
                 displayRes = `${parts[0]} <span>(${parts[1]}</span>`;
             }
-            updateUI(displayRes, `ตัวละคร: ${charNames[c]}`); addH(rawRes);
+            
+            updateUI(displayRes, `ตัวละคร: ${charNames[c]}`); 
+            addH(rawRes); // บันทึกแบบ Plain Text เพื่อป้องกันบัคซ้ำ
         });
     }
 
     function updateUI(m, b) { document.getElementById('epDisplay').innerHTML = m; document.getElementById('badge').innerHTML = b; }
-    function addH(t) { history.unshift({ id: Date.now(), text: t, checked: false }); save(); }
+    
+    function addH(t) { 
+        // ทำความสะอาดข้อความก่อนบันทึกเพื่อความชัวร์
+        const cleanText = t.replace(/<[^>]*>?/gm, '').trim();
+        history.unshift({ id: Date.now(), text: cleanText, checked: false }); 
+        save(); 
+    }
+
     function toggleC(id) { const i = history.find(h => h.id === id); if(i) i.checked = !i.checked; save(); }
     function delI(id, e) { e.stopPropagation(); history = history.filter(h => h.id !== id); save(); }
     function clearAllHistory() { if(confirm("ล้างประวัติทั้งหมด?")) { history = []; save(); } }
@@ -414,4 +440,3 @@
 </script>
 </body>
 </html>
-
